@@ -107,7 +107,6 @@ class CurrencyConversionRatePeer extends \BaseCurrencyConversionRatePeer {
     /**
     * Retrieves a currency conversion rate from a remote system and returns it.
     * 
-    * 
     * @param string $from_iso_code
     *   // Currency ISO code
     * 
@@ -129,26 +128,48 @@ class CurrencyConversionRatePeer extends \BaseCurrencyConversionRatePeer {
             '$to_iso_code expects non-empty string'
         );
         
-        
-        // Currency exchange rate currently comes from Google.
-        // @TODO This is not an official API, thus it needs to be replaced.
-            $query = "1{$from_iso_code}=?{$to_iso_code}";
+        // Get exchange rate from yahoo finance.
+            $query = "{$from_iso_code}{$to_iso_code}=X";
 
-            $url = 'http://www.google.com/ig/calculator?hl=en&q=' . urlencode($query);
+            $url = 'http://download.finance.yahoo.com/d/quotes.csv?s=' . $query . '&f=l1&e=.cs';
 
             $http_request = new \Altumo\Http\OutgoingHttpRequest( $url );
             $http_request->setHeaders(
-                array( 'User-Agent', 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.60 Safari/537.11' )
+                array( 
+                    'User-Agent'        => 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.60 Safari/537.11', 
+                    'Content-Type'      => 'application/x-www-form-urlencoded; charset=UTF-8',
+                    'X-Requested-With'  => 'XMLHttpRequest'
+                )
             );
-            $response = $http_request->sendAndGetResponseMessage()->getRawMessageBody();
-
-            if( preg_match('/^.*?rhs\\:.*?([-+]?\\b[0-9]+(\\.[0-9]+)?\\b)/m', $response, $matches) ){
-                $rate = $matches[1];
-            } else {
-                throw new \Exception( 'Error retrieving an updated currency conversion rate. (unexpected format)' );
-            }
             
-        return $rate;
+            $response = \Altumo\Validation\Numerics::assertPositiveDouble(
+                $http_request->sendAndGetResponseMessage()->getRawMessageBody(),
+                'Unable to update currency exchange rate. Invalid response received.'
+            );      
+        
+            
+            return (float)$response;
+        
+            // Google implementation (unsupported by google, likely unreliable).
+              /*  $query = "1{$from_iso_code}=?{$to_iso_code}";
+
+                $url = 'http://www.google.com/ig/calculator?hl=en&q=' . urlencode($query);
+
+                $http_request = new \Altumo\Http\OutgoingHttpRequest( $url );
+                $http_request->setHeaders(
+                    array( 
+                        'User-Agent'        => 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.60 Safari/537.11', 
+                        'Content-Type'      => 'application/x-www-form-urlencoded; charset=UTF-8',
+                        'X-Requested-With'  => 'XMLHttpRequest'
+                    )
+                );
+                $response = $http_request->sendAndGetResponseMessage()->getRawMessageBody();
+
+                if( preg_match('/^.*?rhs\\:.*?([-+]?\\b[0-9]+(\\.[0-9]+)?\\b)/m', $response, $matches) ){
+                    $rate = $matches[1];
+                } else {
+                    throw new \Exception( 'Error retrieving an updated currency conversion rate. (unexpected format)' );
+                }*/
 
     }
     
