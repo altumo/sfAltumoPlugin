@@ -96,6 +96,30 @@ class sfAltumoPluginConfiguration extends sfPluginConfiguration {
 
             }
             
+        // Add altumo Api Settings (Add this in your api app's config)       
+            //sfConfig::set( 'altumo_api_session_cookie_name',  'api_session' );
+        
+
+        // Add routes for modules provided by the plugin (You must add each of these to settings.yml > enabled_modules
+            $this->dispatcher->connect(
+                'routing.load_configuration', 
+                function($event){
+
+                    $routing = $event->getSubject();
+                    
+                    // health-check                       
+                        $routing->prependRoute(
+                            'sfAltumoPlugin_health_check', 
+                            new sfRoute(
+                                '/health-check', 
+                                array('module' => 'sfAltumoPlugin_health_check', 'action' => 'index') 
+                            )
+                        );
+                    
+                }
+            );
+        
+
         /**
         * Execute any commands that the plugin needs when the framework loads, but
         * before an action is executed.
