@@ -47,8 +47,42 @@
         <column name="iso_number" type="VARCHAR" required="true" size="3" />
 
     </table>
-    
-    
+
+
+    <table name="currency_conversion_rate">
+
+        <!-- Fixture representing a monetary currency. -->
+
+        <column name="id" type="INTEGER" required="true" primaryKey="true" autoIncrement="true" />
+        <column name="from_currency_id" type="INTEGER" required="true" />
+        <column name="to_currency_id" type="INTEGER" required="true" />
+        <column name="rate" type="FLOAT" required="true" />
+        <column name="created_at" type="timestamp" />
+        <column name="updated_at" type="timestamp" />
+
+        <foreign-key foreignTable="currency" onDelete="cascade">
+            <reference local="from_currency_id" foreign="id" />
+        </foreign-key>
+
+        <foreign-key foreignTable="currency" onDelete="cascade">
+            <reference local="to_currency_id" foreign="id" />
+        </foreign-key>
+
+
+        <unique name="unique_currencies">
+            <unique-column name="from_currency_id" />
+            <unique-column name="to_currency_id" />
+        </unique>
+
+
+        <index name="currencies">
+            <index-column name="from_currency_id" />
+            <index-column name="to_currency_id" />
+        </index>
+
+    </table>
+
+
     <table name="state">
 
         <!-- Fixture representing a State or Country political subdivision --> 
@@ -341,6 +375,5 @@
         </index>
 
     </table>
-        
 
 </database>

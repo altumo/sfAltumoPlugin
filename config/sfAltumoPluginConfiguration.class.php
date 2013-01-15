@@ -21,11 +21,7 @@ class sfAltumoPluginConfiguration extends sfPluginConfiguration {
     * @see sfPluginConfiguration
     */
     public function initialize() {
-
-        // Include the Altumo loader.
-            //require_once( dirname(__FILE__) . '/../lib/vendor/altumo/source/php/loader.php' );
-
-        
+       
         //set default timezone
             date_default_timezone_set( 'America/Los_Angeles' );
 
@@ -45,9 +41,9 @@ class sfAltumoPluginConfiguration extends sfPluginConfiguration {
             
             
         // Add altumo paths to sfConfig
-            sfConfig::set( 'altumo_plugin_dir', realpath( dirname(__FILE__) . '/../' ) );
-            sfConfig::set( 'altumo_javascript_lib_dir', sfConfig::get( 'altumo_plugin_dir' ) . '/lib/vendor/altumo/lib/javascript' );
-            sfConfig::set( 'altumo_javascript_src_dir', sfConfig::get( 'altumo_plugin_dir' ) . '/lib/vendor/altumo/source/javascript' );
+            \sfConfig::set( 'altumo_plugin_dir', realpath( dirname(__FILE__) . '/../' ) );
+            \sfConfig::set( 'altumo_javascript_lib_dir', sfConfig::get( 'altumo_plugin_dir' ) . '/lib/vendor/altumo/lib/javascript' );
+            \sfConfig::set( 'altumo_javascript_src_dir', sfConfig::get( 'altumo_plugin_dir' ) . '/lib/vendor/altumo/source/javascript' );
     
        
         /**
@@ -64,7 +60,7 @@ class sfAltumoPluginConfiguration extends sfPluginConfiguration {
         
             if( $aws_configuration['enable'] ){
                 
-                CFCredentials::set(array(
+                \CFCredentials::set(array(
 
                     'default' => array(
 
@@ -100,9 +96,28 @@ class sfAltumoPluginConfiguration extends sfPluginConfiguration {
 
             }
             
-            
         // Add altumo Api Settings (Add this in your api app's config)       
             //sfConfig::set( 'altumo_api_session_cookie_name',  'api_session' );
+        
+
+        // Add routes for modules provided by the plugin (You must add each of these to settings.yml > enabled_modules
+            $this->dispatcher->connect(
+                'routing.load_configuration', 
+                function($event){
+
+                    $routing = $event->getSubject();
+                    
+                    // health-check                       
+                        $routing->prependRoute(
+                            'sfAltumoPlugin_health_check', 
+                            new sfRoute(
+                                '/health-check', 
+                                array('module' => 'sfAltumoPlugin_health_check', 'action' => 'index') 
+                            )
+                        );
+                    
+                }
+            );
         
 
         /**
@@ -110,7 +125,7 @@ class sfAltumoPluginConfiguration extends sfPluginConfiguration {
         * before an action is executed.
         * 
         * Note: this is here because it was used before to load JS and CSS, but
-        * that was relocated to Frontend\Controller
+        * that was relocated to Frontend\App
         */
 
         /*

@@ -1,6 +1,6 @@
 [submodule "lib/vendor/altumo"]
 	path = lib/vendor/altumo
-	url = git://github.com/homer6/altumo.git
+	url = git://github.com/altumo/altumo.git
 [submodule "lib/vendor/swiftmailer"]
 	path = lib/vendor/swiftmailer
 	url = https://github.com/swiftmailer/swiftmailer.git
@@ -10,3 +10,6 @@
 [submodule "lib/vendor/aws"]
 	path = lib/vendor/aws
 	url = git://github.com/amazonwebservices/aws-sdk-for-php.git
+[submodule "bin/frequent-cron"]
+	path = bin/frequent-cron
+	url = git://github.com/homer6/frequent-cron.git
