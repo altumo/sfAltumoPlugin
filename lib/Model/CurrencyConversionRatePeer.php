@@ -141,9 +141,9 @@ class CurrencyConversionRatePeer extends \BaseCurrencyConversionRatePeer {
                     'X-Requested-With'  => 'XMLHttpRequest'
                 )
             );
-            
+
             $response = \Altumo\Validation\Numerics::assertPositiveDouble(
-                $http_request->sendAndGetResponseMessage()->getRawMessageBody(),
+                trim($http_request->sendAndGetResponseMessage()->getRawMessageBody()),
                 'Unable to update currency exchange rate. Invalid response received.'
             );      
         
