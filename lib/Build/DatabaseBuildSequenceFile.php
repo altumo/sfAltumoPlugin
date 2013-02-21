@@ -335,10 +335,15 @@ class DatabaseBuildSequenceFile extends \Altumo\Xml\XmlFile{
         
         //if the "since" hash was not found, set the hash position to so that it will match all entries
             if( count( $this->getXmlRoot()->queryWithXpath( 'Change[@hash="' . $since_hash . '"]', \Altumo\Xml\XmlElement::RETURN_TYPE_STRING, false ) ) == 0 ){
-                $hash_position = 0;
+
+                // abort
+                throw new \Exception( sprintf( 'Last applied hash %s not found in build sequence', $since_hash ) );
+                
             }else{
-                //get the position of the since_hash
+            	
+                // get the position of the since_hash
                 $hash_position = count( $this->getXmlRoot()->queryWithXpath( 'Change[@hash="' . $since_hash . '"]/preceding-sibling::*', \Altumo\Xml\XmlElement::RETURN_TYPE_STRING, false ) ) + 1;
+                
             }
         
             $attribute_selector = '';
@@ -461,3 +466,4 @@ class DatabaseBuildSequenceFile extends \Altumo\Xml\XmlFile{
 
     
 }
+

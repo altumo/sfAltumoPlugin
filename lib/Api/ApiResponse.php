@@ -71,7 +71,7 @@ class ApiResponse extends \sfWebResponse{
         
         //output the response as json or jsonp
             $json_method = $request->getParameter('jsonp', null);
-            if( is_null($json_method) ){
+            if( !strlen($json_method) ){
                 $json_method = $request->getParameter('callback', null);
             }
             if( !is_null($json_method) && !empty($json_method) ){
