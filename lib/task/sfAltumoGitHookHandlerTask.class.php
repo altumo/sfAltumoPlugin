@@ -48,7 +48,6 @@ EOF;
     * @see sfTask
     */
     protected function execute( $arguments = array(), $options = array() ) {
-
         $hook_name = $arguments['hook-name'];
         
         if( $hook_name === 'install' ){
@@ -56,14 +55,14 @@ EOF;
             $git_hooks = array(
                 array(
                     'source' => sfConfig::get( 'sf_root_dir' ) . '/plugins/sfAltumoPlugin/install/git_hook_handler.sh',
-                    'destination_path' => realpath( sfConfig::get( 'sf_root_dir' ) . '/../../.git/hooks' ),
+                    'destination_path' => sfConfig::get( 'sf_root_dir' ) . '/../../.git/hooks',
                     'targets' => array(
                         'post-commit'
                     )
                 ),
                 array(
                     'source' => sfConfig::get( 'sf_root_dir' ) . '/plugins/sfAltumoPlugin/install/git_hook_handler_sfAltumoPlugin.sh',
-                    'destination_path' => realpath( sfConfig::get( 'sf_root_dir' ) . '/plugins/sfAltumoPlugin/.git/hooks' ),
+                    'destination_path' => realpath( sfConfig::get( 'sf_root_dir' ) . '/../../.git/modules/htdocs/project/plugins/sfAltumoPlugin/hooks' ),
                     'targets' => array(
                         'post-commit', 
                         'post-merge' //git pull
@@ -76,10 +75,14 @@ EOF;
                 $general_hook_template_file = $git_hook['source'];
                 $target_path = $git_hook['destination_path'];
 
+                if( $target_path == false ){
+                    throw new sfCommandException( sprintf('There was a problem installing Git hooks from "%s" to "%s"', $general_hook_template_file, $target_path) );
+                }
+
                 //check to make sure the folder is writable
                 //we want the hooks to be overwritten, so we're not going to check for that here
                     if( !is_writable($target_path) ){
-                        throw new sfCommandException( sprintf('"%s" is not writable. Please ensure this user can write to that directory.', $target_path) );
+                        throw new sfCommandException( sprintf('"%s" is not writable. Please ensure this user can write to that directory.', $target_path)  );
                     }
                     
                 //install the hooks
@@ -93,12 +96,10 @@ EOF;
             
         }else{
 
-            $handler = new \sfAltumoPlugin\Build\GitHookHandler( $hook_name );
+            new \sfAltumoPlugin\Build\GitHookHandler( $hook_name );
             
         }     
-        
-        
-        
+
     }
     
 }
