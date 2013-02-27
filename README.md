@@ -13,14 +13,14 @@ Altumo is a library of tools for web development under the MIT License.
 
 Dependencies
 ------------
-   - Git 1.7+
-   - Symfony 1.4.*
-   - Propel 1.6
+   - Git >= 1.7+
+   - Symfony >= 1.4.16
+   - Propel >= 1.6
 
 Installation - New Project
 --------------------------
 
-  - See: https://github.com/homer6/blank_altumo
+  - See: https://github.com/altumo/blank_altumo
 
 
 Installation - Existing Project
@@ -29,7 +29,7 @@ Installation - Existing Project
   - Symfony root must be in htdocs/project (relative to the git root).
   - Symfony 1.4 must be installed in the lib/vendor directory (eg. htdocs/project/lib/vendor/symfony).
   - cd {git root}
-  - git submodule add git://github.com/homer6/sfAltumoPlugin.git htdocs/project/plugins/sfAltumoPlugin
+  - git submodule add git://github.com/altumo/sfAltumoPlugin.git htdocs/project/plugins/sfAltumoPlugin
   - git submodule update --recursive --init
   - add "$this->enablePlugins('sfAltumoPlugin');" to ProjectConfiguration.class.php
   - cd htdocs/project 
