@@ -30,19 +30,21 @@ class publicPrimaryKeyMaker {
     *  * Object Peer must implement retrieveByPublicPrimaryKey()
     * 
     * @param mixed $object
-    * @param mixed $ppk_field The field name to use (default = PublicPrimaryKey)
-    * @param $key_length the integer string length to be generated.
-    * @param $key_char_pool a non-delimited string containing the pool of characters to pick from.
+    * @param string $ppk_field          // The field name to use (default = PublicPrimaryKey)
+    * @param string $key_length         // The string length to be generated.
+    * @param string $key_char_pool      // A non-delimited string containing the pool of characters to pick from.
+    * @param string $prefix             // An optional prefix to add to the generated key. (Will be in addition to the $key_length).
+     *
     * @return null
     */
-    public static function processObject( $object, $ppk_field = self::KEY_FIELD_NAME, $key_length = self::KEY_LENGTH, $key_char_pool = self::KEY_CHARACTER_POOL ){
+    public static function processObject( $object, $ppk_field = self::KEY_FIELD_NAME, $key_length = self::KEY_LENGTH, $key_char_pool = self::KEY_CHARACTER_POOL, $prefix = null ){
         
         if( !is_object( $object ) ){
             throw new Exception( 'Cannot make PPK for non-object' );
         }
         
         if( self::getPublicPrimaryKeyValue( $object, $ppk_field )  == null ){
-            self::setPublicPrimaryKeyValue( $object, $ppk_field, self::getUniqueKey( $object, $ppk_field, $key_length, $key_char_pool ) );
+            self::setPublicPrimaryKeyValue( $object, $ppk_field, self::getUniqueKey( $object, $ppk_field, $key_length, $key_char_pool, $prefix ) );
         }
         
     }
@@ -54,7 +56,9 @@ class publicPrimaryKeyMaker {
     * @return string
     */
     private static function getPublicPrimaryKeyValue( $object, $ppk_field ){
+
         return eval( 'return $object->get' . $ppk_field . '();' );
+
     }    
     
     /**
@@ -65,7 +69,9 @@ class publicPrimaryKeyMaker {
     * @param string $value
     */
     private static function setPublicPrimaryKeyValue( $object, $ppk_field, $value ){
+
         return eval( 'return $object->set' . $ppk_field . '($value);' );
+
     }
     
     
@@ -74,7 +80,7 @@ class publicPrimaryKeyMaker {
     * 
     * @param Object $object - must have a getPeer method.
     */
-    private static function getUniqueKey( $object, $ppk_field = self::KEY_FIELD_NAME, $key_length = self::KEY_LENGTH, $key_char_pool = self::KEY_CHARACTER_POOL  ){
+    private static function getUniqueKey( $object, $ppk_field = self::KEY_FIELD_NAME, $key_length = self::KEY_LENGTH, $key_char_pool = self::KEY_CHARACTER_POOL, $prefix = null  ){
         
         $object_peer =  self::getObjectPeer( $object );
         
@@ -82,8 +88,10 @@ class publicPrimaryKeyMaker {
             throw new \Exception( "Object must have a Peer class." );
         }
 
+        $prefix = strlen($prefix) ? $prefix : '';
+
         $tries = 0;
-        while( self::primaryKeyValueExists( ($new_id = \Altumo\String\String::generateRandomString( $key_length, $key_char_pool )), $object_peer, $ppk_field ) ){
+        while( self::primaryKeyValueExists( ($new_id = $prefix . \Altumo\String\String::generateRandomString( $key_length, $key_char_pool )), $object_peer, $ppk_field ) ){
             if( $tries++ > 30 ){
                 throw new \Exception( "Tried to generate a unique value for {$ppk_field} {$tries} times and failed." ); 
             }
@@ -92,11 +100,29 @@ class publicPrimaryKeyMaker {
         return $new_id;
 
     }
-    
+
+    /**
+     * Retrieves the Object's Peer class (Propel-specific)
+     *
+     * @param $object
+     *
+     * @return Object (Peer)
+     */
     private static function getObjectPeer( $object ){
-        return eval( 'return $object->getPeer();' ); 
+
+        return eval( 'return $object->getPeer();' );
+
     }
-    
+
+
+    /**
+     * @param string $primary_key_value
+     * @param Object $object_peer
+     * @param string $ppk_field
+     *
+     * @return bool
+     * @throws \Exception
+     */
     private static function primaryKeyValueExists( $primary_key_value, $object_peer, $ppk_field ){
         
         if( !is_callable( $callable = array( $object_peer, "retrieveBy{$ppk_field}" ) ) ){
