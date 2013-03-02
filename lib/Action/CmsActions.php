@@ -46,6 +46,10 @@ class CmsActions extends BaseActions {
      */
     public function enableCmsEditor( $skip_jquery = false ){
 
+        if( !$this->cmsIsEnabled() ){
+            return;
+        }
+
         if( !$skip_jquery ){
             $this->getResponse()->addJavascript( '//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js' );
         }
@@ -72,8 +76,6 @@ class CmsActions extends BaseActions {
      * @return void
      */
     protected function addCmsFunctions(){
-
-        $user_can_edit_cms_fragments = $this->userCanEditCmsFragments();
 
         $that = $this;
 
@@ -106,6 +108,10 @@ class CmsActions extends BaseActions {
      * @return void
      */
     public function startCmsFragment( $tag, $chrome_attributes = '', $fragment_type = 'text' ){
+
+        if( !$this->cmsIsEnabled() ){
+            return;
+        }
 
         $chrome_attributes = \Altumo\Validation\Strings::assertString(
             $chrome_attributes,
@@ -146,6 +152,10 @@ class CmsActions extends BaseActions {
      * @return void
      */
     public function endCmsFragment(){
+
+        if( !$this->cmsIsEnabled() ){
+            return;
+        }
 
         if( !$this->hasCurrentCmsFragment() ){
             throw new Exception( 'Not currently inside of a fragment.' );
@@ -211,6 +221,17 @@ class CmsActions extends BaseActions {
     protected function getCurrentCmsFragment(){
 
         return $this->current_fragment;
+
+    }
+
+    /**
+    * Returns true if the CMS is enabled. (from app.yml)
+    *
+    *@return bool
+    */
+    public function cmsIsEnabled(){
+
+        return \sfConfig::get( 'app_cms_enable', false );
 
     }
 
