@@ -22,9 +22,6 @@ class sfAltumoPluginConfiguration extends sfPluginConfiguration {
     */
     public function initialize() {
        
-        //set default timezone
-            date_default_timezone_set( 'America/Los_Angeles' );
-
         //symfony 2 autoloader (for classes with namespaces only)
             
             $altumo_php_source_path = __DIR__ . '/../lib/vendor/altumo/source/php';
