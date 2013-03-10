@@ -57,4 +57,18 @@ class BaseActions extends \sfActions {
         
     }
 
+    
+    /**
+    * Returns true only if the current Environment (set by the controller) is 
+    * production.
+    * 
+    * @return bool
+    */
+    protected function isProduction(){
+        
+        $environment = $this->getContext()->getConfiguration()->getEnvironment();
+        
+        return in_array( $environment, array('prod', 'production') );
+
+    }
 }
