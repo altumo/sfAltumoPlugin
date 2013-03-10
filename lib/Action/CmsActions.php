@@ -33,6 +33,69 @@ class CmsActions extends BaseActions {
 
     }
 
+    /**
+     *
+     *
+     * @return bool
+     */
+    protected function userCanEditCmsFragments(){
+
+        return $this->getUser()->isAuthenticated();
+
+    }
+
+
+
+    /**
+     * Executes cms fragment edition
+     *
+     * @param sfRequest $request A request object
+     */
+    public function executeSaveContentEdit( sfWebRequest $request ){
+
+        try{
+            $tag = \Altumo\Validation\Strings::assertNonEmptyString(
+                $request->getParameter( 'tag', null ),
+                '$tag expects a non empty string'
+            );
+
+            $content = \Altumo\Validation\Strings::assertNonEmptyString(
+                $request->getParameter( 'content', null ),
+                '$content expects a non empty string'
+            );
+
+            $fragment = \CmsFragmentPeer::retrieveByTag( $tag );
+
+            if( is_null( $fragment ) ){
+                throw new Exception( 'Requested edition tag not found.' );
+            }
+
+            $fragment->setContent( $content );
+            $fragment->save();
+
+        } catch( Exception $e ) {
+
+            return $this->sendJsonResponse(
+                false,
+                'Unable to save edition.',
+                array( 'error' => $e->getMessage() ),
+                true
+            );
+
+        }
+
+
+
+        return $this->sendJsonResponse(
+            true,
+            'saved',
+            array( 'tag' => $tag, 'version' => $fragment->getVersion() ),
+            true
+        );
+
+    }
+
+
 
     /**
      * Enables the Cms editor.
