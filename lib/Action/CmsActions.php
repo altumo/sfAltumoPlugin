@@ -51,7 +51,7 @@ class CmsActions extends BaseActions {
      *
      * @param sfRequest $request A request object
      */
-    public function executeSaveContentEdit( sfWebRequest $request ){
+    public function executeSaveContentEdit( $request ){
 
         try{
             $tag = \Altumo\Validation\Strings::assertNonEmptyString(
