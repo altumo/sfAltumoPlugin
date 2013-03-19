@@ -539,11 +539,13 @@ class Message{
     * 
     * 
     * @param string $html_partial
+    * @return self
     */
-    protected function setHtmlPartial( $html_partial ){
+    public function setHtmlPartial( $html_partial ){
     
         $this->html_partial = $html_partial;
         
+	return $this;
     }
     
     
@@ -553,7 +555,7 @@ class Message{
     * 
     * @return string
     */
-    protected function getHtmlPartial(){
+    public function getHtmlPartial(){
     
         return $this->html_partial;
         
@@ -565,11 +567,13 @@ class Message{
     * 
     * 
     * @param string $html_partial
+    * @return self
     */
-    protected function setTextPartial( $text_partial ){
+    public function setTextPartial( $text_partial ){
     
         $this->text_partial = $text_partial;
         
+	return $this;
     }
     
     
@@ -579,7 +583,7 @@ class Message{
     * 
     * @return string
     */
-    protected function getTextPartial(){
+    public function getTextPartial(){
     
         return $this->text_partial;
         
@@ -763,12 +767,15 @@ class Message{
                     ->setBcc( $this->getBccRecipients() );
                 
             }
-            
-        if( $this->getHtmlPartial() != null ){
-            $swift_message
-                ->setBody( \get_partial($this->getHtmlPartial(), $this->getPartialVariables()), 'text/html' )
-                ->addPart( \get_partial($this->getTextPartial(), $this->getPartialVariables()), 'text/plain' );
-        }
+        
+	if( null !== $this->getTextPartial() ) {
+		$swift_message->setBody( \get_partial( $this->getTextPartial(), $this->getPartialVariables() ), 'text/plain' );
+	}
+
+	if( null !== $this->getHtmlPartial() ) {
+		$swift_message->addPart( \get_partial( $this->getHtmlPartial(), $this->getPartialVariables() ), 'text/html' );
+	}
+
 
         foreach( $this->getContentParts() as $content_part ){
             $swift_message->addPart( $content_part[0], $content_part[1] );
