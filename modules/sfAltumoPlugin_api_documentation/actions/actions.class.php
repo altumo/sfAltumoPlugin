@@ -17,12 +17,12 @@ class sfAltumoPlugin_api_documentationActions extends sfActions {
     */
     public function preExecute(){
         
-        $expected_username = sfConfig::get( 'app_api_documentation_username', 'api' );
-        $expected_password = sfConfig::get( 'app_api_documentation_password', 'api' );
-        
+        $expected_username = sfConfig::get( 'sf_api_documentation_username', 'api' );
+        $expected_password = sfConfig::get( 'sf_api_documentation_password', 'password' );
+
         if (!isset($_SERVER['PHP_AUTH_USER'])) {
             
-            header('WWW-Authenticate: Basic realm="My Realm"');
+            header('WWW-Authenticate: Basic realm="My API"');
             header('HTTP/1.0 401 Unauthorized');
             echo 'Unable to authenticate';
             exit;
